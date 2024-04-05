@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Customer Information</title>
+  <style>
+    /* Add your CSS styles here */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+    }
+
+    .container {
+      width: 50%;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    button[type="submit"] {
+      padding: 10px 20px;
+      border: none;
+      background-color: #007bff;
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Edit Customer Information</h2>
+<!--  <form id="customerForm" action="/update-customer/{customerId}" method="put">-->
+    <form id="customerForm" action="/update-customer/${customerId}" method="put" enctype="application/x-www-form-urlencoded">
+
+    <!-- Include a hidden input field for customer ID -->
+    <input type="hidden" id="customerId" name="customerId" value="">
+
+    <div class="form-group">
+      <label for="firstName">First Name:</label>
+      <input type="text" id="firstName" name="firstName" required>
+    </div>
+    <div class="form-group">
+      <label for="lastName">Last Name:</label>
+      <input type="text" id="lastName" name="lastName" required>
+    </div>
+    <div class="form-group">
+      <label for="street">Street:</label>
+      <input type="text" id="street" name="street" required>
+    </div>
+    <div class="form-group">
+      <label for="address">Address:</label>
+      <input type="text" id="address" name="address" required>
+    </div>
+    <div class="form-group">
+      <label for="city">City:</label>
+      <input type="text" id="city" name="city" required>
+    </div>
+    <div class="form-group">
+      <label for="state">State:</label>
+      <input type="text" id="state" name="state" required>
+    </div>
+    <div class="form-group">
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required>
+    </div>
+    <div class="form-group">
+      <label for="phone">Phone:</label>
+      <input type="tel" id="phone" name="phone" required>
+    </div>
+    <button type="submit" >Save Changes</button>
+  </form>
+</div>
+
+<script>
+
+
+  // Function to fetch customer details and populate the form fields
+  function fetchCustomerDetails(customerId) {
+    fetch(`/api/customers/${customerId}`)
+      .then(response => response.json())
+      .then(data => {
+        // Populate form fields with customer details
+        document.getElementById('customerId').value = data.customerId;
+        document.getElementById('firstName').value = data.firstName;
+        document.getElementById('lastName').value = data.lastName;
+        document.getElementById('street').value = data.street;
+        document.getElementById('address').value = data.address;
+        document.getElementById('city').value = data.city;
+        document.getElementById('state').value = data.state;
+        document.getElementById('email').value = data.email;
+        document.getElementById('phone').value = data.phone;
+      })
+      .catch(error => console.error('Error fetching customer details:', error));
+  }
+
+  // Call the function to fetch and populate customer details when the page loads
+  document.addEventListener('DOMContentLoaded', () => {
+    // Extract the customer ID from the query parameter in the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const customerId = urlParams.get('id');
+
+    // Fetch and populate customer details
+    fetchCustomerDetails(customerId);
+  });
+   function submitForm(event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    const form = document.getElementById('customerForm');
+    const customerId = document.getElementById('customerId').value;
+    const formData = new FormData(form);
+    const url = `/update-customer/${customerId}`; // Interpolate customerId into URL
+
+    fetch(url, {
+      method: 'PUT',
+      body: formData
+    })
+    .then(response => {
+      if (response.ok) {
+        window.location.href = '/customerList.html'; // Redirect on success
+      } else {
+        console.error('Error updating customer:', response.statusText);
+      }
+    })
+    .catch(error => console.error('Error updating customer:', error));
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const customerId = urlParams.get('id');
+    fetchCustomerDetails(customerId);
+
+    // Add submit event listener to the form
+    const form = document.getElementById('customerForm');
+    form.addEventListener('submit', submitForm);
+  });
+</script>
+
+</body>
+</html>
